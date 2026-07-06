@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   photo_gallery:
   permission_handler:
+  transparent_image:
 
 dev_dependencies:
   flutter_test:

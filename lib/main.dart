@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:object_based_search/album_page.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_gallery/photo_gallery.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,9 +57,9 @@ class _GalleryHomeState extends State<GalleryHome> {
      }
    }
   }
-
+ List<Album> albums = [];
   loadAllAlbums()async{
- List<Album> albums = await  PhotoGallery.listAlbums();
+  albums = await  PhotoGallery.listAlbums();
  albums.forEach((element) {
    print(element.name);
  });
@@ -69,8 +71,46 @@ class _GalleryHomeState extends State<GalleryHome> {
 
   @override
   Widget build(BuildContext context) {
+    double imageWidth = (MediaQuery.of(context).size.width - 15)/3;
     return Scaffold(
+       appBar: AppBar(title: Text("AI Gallery"),
+        backgroundColor: Colors.red.shade50,
+       ),
+      body: Container(
+        margin: EdgeInsets.only(left: 3,right: 3, top: 3),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3,
+           mainAxisSpacing: 5, crossAxisSpacing: 3, childAspectRatio: .75
+          ),
+          itemBuilder: (BuildContext context, int index){
+             Album album = albums[index];
+              return InkWell(
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                   return AlbumPage(album);
+                  }));
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: imageWidth,
+                      child: FadeInImage(placeholder: MemoryImage(kTransparentImage), image: AlbumThumbnailProvider(album: album,
+                       highQuality: true
+                      ), fit: BoxFit.cover)
+                    ),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(album.name.toString(), style: TextStyle(fontSize: 13),),
 
+                    )
+
+                  ],
+                ),
+              );
+          },
+          itemCount: albums.length,
+        ),
+      )
     );
   }
 }
